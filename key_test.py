@@ -12,8 +12,9 @@ def on_press(key):
     if(key == keyboard.Key.space):
         k_c = ' '
         
-    if(key == keyboard.Key.enter):       
-        print(buf)
+ #Add conditional for length limit of message depending on LCD OR scrolling LCD output
+    if(key == keyboard.Key.enter): 
+        print(buf) #In MQTT, publish this buf to the broker
         buf.clear()
     elif(k_c != ''):
         buf.append(k_c)
