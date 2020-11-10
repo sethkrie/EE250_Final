@@ -13,7 +13,7 @@ from pynput.keyboard import Listener, Key
 
 # By appending the folder of all the GrovePi libraries to the system path here,
 # we are successfully `import grovepi`
-sys.path.append('~/User/lab05-rob/Software/Python/')
+sys.path.append('../../Software/Python/')
 # This append is to support importing the LCD library.
 sys.path.append('../../Software/Python/grove_rgb_lcd')
 
@@ -116,7 +116,6 @@ if __name__ == '__main__':
             client.publish("P2P/LED", 'LED_ON')
             payload = _username + " is at their keyboard."
     	    client.publish("P2P/Message", payload)
-    
         else
             client.publish("P2P/LED", 'LED_OFF')
             payload = _username + " is away from their keyboard."
