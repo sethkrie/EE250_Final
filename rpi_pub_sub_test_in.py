@@ -10,24 +10,21 @@ import paho.mqtt.client as mqtt
 import time
 import sys
 from pynput.keyboard import Listener, Key
-#global releaseListening
-#keepListening = True
 
 # By appending the folder of all the GrovePi libraries to the system path here,
 # we are successfully `import grovepi`
-sys.path.append('~/User/Desktop/GrovePi-EE250/Software/Python/')
+sys.path.append('~/User/lab05-rob/Software/Python/')
 # This append is to support importing the LCD library.
 sys.path.append('../../Software/Python/grove_rgb_lcd')
 
 
-#import grovepi from grove_rgb_lcd import *
+import grovepi from grove_rgb_lcd import *
 _username = ""
 
-#ultPrt = 8 # D8 is the port for ultrasonic ranger
-#ledPrt = 2 # D2 Status LED
-
-#grovepi.pinMode(butPrt,"INPUT")
-#grovepi.pinMode(ledPrt,"OUTPUT")
+ultPrt = 8 # D8 is the port for ultrasonic ranger
+ledPrt = 2 # D2 Status LED
+grovepi.pinMode(ledPrt,"OUTPUT")
+grovepi.pinMode(ultPrt, "INPUT")
 
 def on_connect(client, userdata, flags, rc):
     print("Connected to server (i.e., broker) with result code "+str(rc))
@@ -105,8 +102,6 @@ if __name__ == '__main__':
     lis = Listener(on_press=on_press)
     lis.start() # start to listen on a separate thread  
     	
-    #PORT14 = 14
-    #grovepi.pinMode(PORT14, "INPUT")
     #setRGB(100,100,100) #bright screen
     while True:
     	#Keyboard Handler
@@ -114,11 +109,20 @@ if __name__ == '__main__':
         lis.join()
         
         #Poll USR value & publish (always)
-       # distance = grovepi.ultrasonicRead(ultPrt)
-      #  client.publish("P2P/ultrasonicRanger", distance)
-        
-      #  if(distance < 200):
-      #       client.publish("P2P/LED", 'LED_ON')
+        distance = grovepi.ultrasonicRead(ultPrt)
+        #client.publish("P2P/ultrasonicRanger", distance)
+             
+        if(distance < 200):
+            client.publish("P2P/LED", 'LED_ON')
+            payload = _username + " is at their keyboard."
+    	    client.publish("P2P/Message", payload)
+    
+        else
+            client.publish("P2P/LED", 'LED_OFF')
+            payload = _username + " is away from their keyboard."
+    	    client.publish("P2P/Message", payload)
+          
+          
         time.sleep(1)
         
 

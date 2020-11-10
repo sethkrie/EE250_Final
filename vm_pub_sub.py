@@ -11,22 +11,7 @@ import time
 import sys
 from pynput.keyboard import Listener, Key
 
-# By appending the folder of all the GrovePi libraries to the system path here,
-# we are successfully `import grovepi`
-#sys.path.append('~/User/Desktop/GrovePi-EE250/Software/Python/')
-# This append is to support importing the LCD library.
-#sys.path.append('../../Software/Python/grove_rgb_lcd')
-
-
-#import grovepi
-#from grove_rgb_lcd import *
 _username = ""
-
-#ultPrt = 8 # D8 is the port for ultrasonic ranger
-#ledPrt = 2 # D2 Status LED
-
-#grovepi.pinMode(butPrt,"INPUT")
-#grovepi.pinMode(ledPrt,"OUTPUT")
 
 def on_connect(client, userdata, flags, rc):
     print("Connected to server (i.e., broker) with result code "+str(rc))
@@ -58,8 +43,9 @@ def led_callback(client, userdata, message):
 
 def Message_callback(client, userdata, message):
     #the third argument is 'message' here unlike 'msg' in on_message 
-    print(str(message.payload, "utf-8"))
-
+    payL = str(message.payload, "utf-8")
+    if(payL[1] != _username[1]):
+        print(payL)
     	  
 #Default message callback. Please use custom callbacks.
 def on_message(client, userdata, msg):
@@ -87,30 +73,24 @@ def on_press(key):
 if __name__ == '__main__':
     print("Enter your username: ")
     _username = input()
-    lis = Listener(on_press=on_press)
-    lis.start() # start to listen on a separate thread
     
     #this section is covered in publisher_and_subscriber_example.py
     client = mqtt.Client()
     client.on_message = on_message
     client.on_connect = on_connect
     client.connect(host="eclipse.usc.edu", port=11000, keepalive=60)
-    client.loop_start()   
-    	
-    #PORT14 = 14
-    #grovepi.pinMode(PORT14, "INPUT")
-    #setRGB(100,100,100) #bright screen
+    client.loop_start()
+    
+    payload = _username + " has joined the room."
+    client.publish("P2P/Message", payload)
+    
+    lis = Listener(on_press=on_press)
+    lis.start() # start to listen on a separate thread  
+
     while True:
     	#Keyboard Handler
         on_press(lis)
         lis.join()
-        
-        #Poll USR value & publish (always)
-        #distance = grovepi.ultrasonicRead(ultPrt)
-        #client.publish("P2P/ultrasonicRanger", distance)
-        
-        #if(distance < 200):
-        #     client.publish("P2P/LED", 'LED_ON')
-        #     time.sleep(1)
+        time.sleep(1)
         
 
