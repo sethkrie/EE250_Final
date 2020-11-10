@@ -13,20 +13,19 @@ from pynput import keyboard
 
 # By appending the folder of all the GrovePi libraries to the system path here,
 # we are successfully `import grovepi`
-#sys.path.append('~/User/Desktop/GrovePi-EE250/Software/Python/')
+sys.path.append('~/User/Desktop/GrovePi-EE250/Software/Python/')
 # This append is to support importing the LCD library.
-#sys.path.append('../../Software/Python/grove_rgb_lcd')
+sys.path.append('../../Software/Python/grove_rgb_lcd')
 
 
-#import grovepi
-#from grove_rgb_lcd import *
+import grovepi from grove_rgb_lcd import *
 _username = ""
 
-#ultPrt = 8 # D8 is the port for ultrasonic ranger
-#ledPrt = 2 # D2 Status LED
+ultPrt = 8 # D8 is the port for ultrasonic ranger
+ledPrt = 2 # D2 Status LED
 
-#grovepi.pinMode(butPrt,"INPUT")
-#grovepi.pinMode(ledPrt,"OUTPUT")
+grovepi.pinMode(butPrt,"INPUT")
+grovepi.pinMode(ledPrt,"OUTPUT")
 
 def on_connect(client, userdata, flags, rc):
     print("Connected to server (i.e., broker) with result code "+str(rc))
@@ -98,20 +97,20 @@ if __name__ == '__main__':
     client.connect(host="eclipse.usc.edu", port=11000, keepalive=60)
     client.loop_start()   
     	
-    #PORT14 = 14
-    #grovepi.pinMode(PORT14, "INPUT")
-    #setRGB(100,100,100) #bright screen
+    PORT14 = 14
+    grovepi.pinMode(PORT14, "INPUT")
+    setRGB(100,100,100) #bright screen
     while True:
     	#Keyboard Handler
         on_press(lis)
         lis.join()
         
         #Poll USR value & publish (always)
-        #distance = grovepi.ultrasonicRead(ultPrt)
-        #client.publish("P2P/ultrasonicRanger", distance)
+        distance = grovepi.ultrasonicRead(ultPrt)
+        client.publish("P2P/ultrasonicRanger", distance)
         
-        #if(distance < 200):
-        #     client.publish("P2P/LED", 'LED_ON')
-        #     time.sleep(1)
+        if(distance < 200):
+             client.publish("P2P/LED", 'LED_ON')
+             time.sleep(1)
         
 
