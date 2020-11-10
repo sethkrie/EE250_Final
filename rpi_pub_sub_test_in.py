@@ -59,7 +59,9 @@ def led_callback(client, userdata, message):
 
 def Message_callback(client, userdata, message):
     #the third argument is 'message' here unlike 'msg' in on_message 
-    print(str(message.payload, "utf-8"))
+    payL = str(message.payload, "utf-8")
+    if(payL[1] != _username[1]):
+        print(payL)
     #setText_norefresh(str(message.payload, "utf-8"))
 
     	  
@@ -89,15 +91,19 @@ def on_press(key):
 if __name__ == '__main__':
     print("Enter your username: ")
     _username = input()
-    lis = Listener(on_press=on_press)
-    lis.start() # start to listen on a separate thread
     
     #this section is covered in publisher_and_subscriber_example.py
     client = mqtt.Client()
     client.on_message = on_message
     client.on_connect = on_connect
     client.connect(host="eclipse.usc.edu", port=11000, keepalive=60)
-    client.loop_start()   
+    client.loop_start()
+    
+    payload = _username + " has joined the room."
+    client.publish("P2P/Message", payload)
+    
+    lis = Listener(on_press=on_press)
+    lis.start() # start to listen on a separate thread  
     	
     #PORT14 = 14
     #grovepi.pinMode(PORT14, "INPUT")
