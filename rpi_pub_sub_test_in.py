@@ -68,13 +68,17 @@ def on_message(client, userdata, msg):
     print("on_message: " + msg.topic + " " + str(msg.payload, "utf-8"))
     
 buf = []
-def key_press(key):
-    k_c = key.name
-    if(key.name == 'space'):
+def on_press(key):
+    try: 
+        k_c = key.char # single-char keys
+    except: 
+        k_c = ''
+    
+    if(key == Key.space):
         k_c = ' '
         
  #Add conditional for length limit of message depending on LCD OR scrolling LCD output
-    if(key.name == 'enter'):
+    if(key == Key.enter):
         payload = ''
         payload = _username + ": " + payload.join(buf) 
         client.publish("P2P/Message", payload) #In MQTT, publish this buf to the broker
@@ -85,7 +89,7 @@ def key_press(key):
 if __name__ == '__main__':
     print("Enter your username: ")
     _username = input()
-    lis = keyboard.Listener(on_press=on_press)
+    lis = Listener(on_press=on_press)
     lis.start() # start to listen on a separate thread
     
     #this section is covered in publisher_and_subscriber_example.py
