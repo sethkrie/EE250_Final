@@ -18,7 +18,7 @@ sys.path.append('../../Software/Python/')
 sys.path.append('../../Software/Python/grove_rgb_lcd')
 
 
-import grovepi from grove_rgb_lcd import *
+import grovepi
 _username = ""
 
 ultPrt = 8 # D8 is the port for ultrasonic ranger
