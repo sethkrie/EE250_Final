@@ -18,25 +18,32 @@ sys.path.append('~/User/Desktop/GrovePi-EE250/Software/Python/')
 sys.path.append('../../Software/Python/grove_rgb_lcd')
 
 
-import grovepi
-from grove_rgb_lcd import *
+#import grovepi
+#from grove_rgb_lcd import *
+_username = ""
 
 ultPrt = 8 # D8 is the port for ultrasonic ranger
 ledPrt = 2 # D2 Status LED
 
-count = 0
-buf = [0 for i in range(48)]
-
-grovepi.pinMode(butPrt,"INPUT")
-grovepi.pinMode(ledPrt,"OUTPUT")
+#grovepi.pinMode(butPrt,"INPUT")
+#grovepi.pinMode(ledPrt,"OUTPUT")
 
 def on_connect(client, userdata, flags, rc):
     print("Connected to server (i.e., broker) with result code "+str(rc))
     #subscribe to topics of interest here
+    
+    #We could just make USR data available to the Flask server and simply publish to it without the callbacks. Maybe a bit of a cleaner design
+    client.subscribe("P2P/ultrasonicRanger")
+    client.message_callback_add("P2P/ultrasonicRanger", ult_callback)
     client.subscribe("P2P/Message")  
-    client.message_callback_add("P2P/Message", ult_callback) 
+    client.message_callback_add("P2P/Message", Message_callback) 
     client.subscribe("P2P/LED")
     client.message_callback_add("P2P/LED", led_callback)
+    
+def ult_callback(client, userdata, message):
+    #the third argument is 'message' here unlike 'msg' in on_message 
+    print(message.topic + " " + "\"" + 
+        str(message.payload, "utf-8") + "\"")
 
 #Custom callbacks need to be structured with three args like on_message()
 def led_callback(client, userdata, message):
@@ -51,8 +58,7 @@ def led_callback(client, userdata, message):
 
 def Message_callback(client, userdata, message):
     #the third argument is 'message' here unlike 'msg' in on_message 
-    print(message.topic + " " + "\"" + 
-        str(message.payload, "utf-8") + "\"")
+    print(str(message.payload, "utf-8"))
     setText_norefresh(str(message.payload, "utf-8"))
 
     	  
@@ -60,44 +66,52 @@ def Message_callback(client, userdata, message):
 def on_message(client, userdata, msg):
     print("on_message: " + msg.topic + " " + str(msg.payload, "utf-8"))
     
+buf = []
 def on_press(key):
     try: 
-        k = key.char # single-char keys
+        k_c = key.char # single-char keys
     except: 
-        k = key.name # other keys
+        k_c = ''
     
-    #Message limit is 48 chars.
-    if(count <= 48):
-    	buf = buf.append(k)
-    	count = count + 1
-    #If the limit is exceeded, just push the buf to the broker
-    #And Clear current buf + count
-    #Or if enter is pressed.
-    else if(k = '{0}'or count > 48):
-    	client.publish("P2P/Message", buf)
-    	count = 0
-    	for i in range(48):
-    		buf[i] = 0	
-
+    if(key == keyboard.Key.space):
+        k_c = ' '
+        
+ #Add conditional for length limit of message depending on LCD OR scrolling LCD output
+    if(key == keyboard.Key.enter):
+        payload = ''
+        payload = _username + ": " + payload.join(buf) 
+        client.publish("P2P/Message", payload) #In MQTT, publish this buf to the broker
+        buf.clear()
+    elif(k_c != ''):
+        buf.append(k_c)
+    	
 if __name__ == '__main__':
+    print("Enter your username: ")
+    _username = input()
+    lis = keyboard.Listener(on_press=on_press)
+    lis.start() # start to listen on a separate thread
+    
     #this section is covered in publisher_and_subscriber_example.py
     client = mqtt.Client()
     client.on_message = on_message
     client.on_connect = on_connect
     client.connect(host="eclipse.usc.edu", port=11000, keepalive=60)
-    client.loop_start()
-    #PORT14 = 14
-    #grovepi.pinMode(PORT14, "INPUT")
+    client.loop_start()   
+    	
+    PORT14 = 14
+    grovepi.pinMode(PORT14, "INPUT")
     setRGB(100,100,100) #bright screen
     while True:
-    	lis = keyboard.Listener(on_press=on_press)
-    	lis.start() # start to listen on a separate thread
-        
-        distance = grovepi.ultrasonicRead(ultPrt)
-        if(distance < 200):
-        	client.publish("P2P/LED", 'LED_ON')      	
-        	client.publish("P2P/ultrasonicRanger", distance)
-        	time.sleep(1)
-                
+    	#Keyboard Handler
         on_press(lis)
+        lis.join()
+        
+        #Poll USR value & publish (always)
+        distance = grovepi.ultrasonicRead(ultPrt)
+        client.publish("P2P/ultrasonicRanger", distance)
+        
+        if(distance < 200):
+             client.publish("P2P/LED", 'LED_ON')
+             time.sleep(1)
+        
 
