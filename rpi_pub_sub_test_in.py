@@ -10,16 +10,17 @@ import paho.mqtt.client as mqtt
 import time
 import sys
 from pynput.keyboard import Listener, Key
+#global releaseListening
+#keepListening = True
 
 # By appending the folder of all the GrovePi libraries to the system path here,
 # we are successfully `import grovepi`
-#sys.path.append('~/User/Desktop/GrovePi-EE250/Software/Python/')
+sys.path.append('~/User/Desktop/GrovePi-EE250/Software/Python/')
 # This append is to support importing the LCD library.
-#sys.path.append('../../Software/Python/grove_rgb_lcd')
+sys.path.append('../../Software/Python/grove_rgb_lcd')
 
 
-#import grovepi
-#from grove_rgb_lcd import *
+#import grovepi from grove_rgb_lcd import *
 _username = ""
 
 #ultPrt = 8 # D8 is the port for ultrasonic ranger
@@ -59,6 +60,7 @@ def led_callback(client, userdata, message):
 def Message_callback(client, userdata, message):
     #the third argument is 'message' here unlike 'msg' in on_message 
     print(str(message.payload, "utf-8"))
+    setText_norefresh(str(message.payload, "utf-8"))
 
     	  
 #Default message callback. Please use custom callbacks.
@@ -66,17 +68,13 @@ def on_message(client, userdata, msg):
     print("on_message: " + msg.topic + " " + str(msg.payload, "utf-8"))
     
 buf = []
-def on_press(key):
-    try: 
-        k_c = key.char # single-char keys
-    except: 
-        k_c = ''
-    
-    if(key == Key.space):
+def key_press(key):
+    k_c = key.name
+    if(key.name == 'space'):
         k_c = ' '
         
  #Add conditional for length limit of message depending on LCD OR scrolling LCD output
-    if(key == Key.enter):
+    if(key.name == 'enter'):
         payload = ''
         payload = _username + ": " + payload.join(buf) 
         client.publish("P2P/Message", payload) #In MQTT, publish this buf to the broker
@@ -87,7 +85,7 @@ def on_press(key):
 if __name__ == '__main__':
     print("Enter your username: ")
     _username = input()
-    lis = Listener(on_press=on_press)
+    lis = keyboard.Listener(on_press=on_press)
     lis.start() # start to listen on a separate thread
     
     #this section is covered in publisher_and_subscriber_example.py
@@ -106,11 +104,11 @@ if __name__ == '__main__':
         lis.join()
         
         #Poll USR value & publish (always)
-        #distance = grovepi.ultrasonicRead(ultPrt)
-        #client.publish("P2P/ultrasonicRanger", distance)
+       # distance = grovepi.ultrasonicRead(ultPrt)
+      #  client.publish("P2P/ultrasonicRanger", distance)
         
-        #if(distance < 200):
-        #     client.publish("P2P/LED", 'LED_ON')
-        #     time.sleep(1)
+      #  if(distance < 200):
+      #       client.publish("P2P/LED", 'LED_ON')
+        time.sleep(1)
         
 
