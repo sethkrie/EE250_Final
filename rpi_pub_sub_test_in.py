@@ -60,7 +60,7 @@ def led_callback(client, userdata, message):
 def Message_callback(client, userdata, message):
     #the third argument is 'message' here unlike 'msg' in on_message 
     print(str(message.payload, "utf-8"))
-    setText_norefresh(str(message.payload, "utf-8"))
+    #setText_norefresh(str(message.payload, "utf-8"))
 
     	  
 #Default message callback. Please use custom callbacks.
