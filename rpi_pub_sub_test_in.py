@@ -18,13 +18,14 @@ sys.path.append('../../Software/Python/')
 sys.path.append('../../Software/Python/grove_rgb_lcd')
 
 
-import grovepi from grove_rgb_lcd import *
-_username = ""
-
-ultPrt = 8 # D8 is the port for ultrasonic ranger
+import grovepi
+ultPrt = 4 # D4 is the port for ultrasonic ranger
 ledPrt = 2 # D2 Status LED
 grovepi.pinMode(ledPrt,"OUTPUT")
-grovepi.pinMode(ultPrt, "INPUT")
+
+_username = ""
+
+
 
 def on_connect(client, userdata, flags, rc):
     print("Connected to server (i.e., broker) with result code "+str(rc))
@@ -47,12 +48,12 @@ def ult_callback(client, userdata, message):
 def led_callback(client, userdata, message):
     #the third argument is 'message' here unlike 'msg' in on_message
     time.sleep(.5)
-    print(message.topic + " " + "\"" + 
-        str(message.payload, "utf-8") + "\"")
+    #print(message.topic + " " + "\"" + 
+        #str(message.payload, "utf-8") + "\"")
     if str(message.payload, "utf-8")== "LED_ON":
-    	grovepi.digitalWrite(ledPrt, 1) #Turn LED on
+        grovepi.digitalWrite(ledPrt, 1) #Turn LED on
     elif str(message.payload, "utf-8")== "LED_OFF":
-    	grovepi.digitalWrite(ledPrt, 0) #Turn LED off
+        grovepi.digitalWrite(ledPrt, 0) #Turn LED off
 
 def Message_callback(client, userdata, message):
     #the third argument is 'message' here unlike 'msg' in on_message 
@@ -61,7 +62,7 @@ def Message_callback(client, userdata, message):
         print(payL)
     #setText_norefresh(str(message.payload, "utf-8"))
 
-    	  
+          
 #Default message callback. Please use custom callbacks.
 def on_message(client, userdata, msg):
     print("on_message: " + msg.topic + " " + str(msg.payload, "utf-8"))
@@ -84,8 +85,10 @@ def on_press(key):
         buf.clear()
     elif(k_c != ''):
         buf.append(k_c)
-    	
+        
 if __name__ == '__main__':
+
+    
     print("Enter your username: ")
     _username = input()
     
@@ -95,33 +98,38 @@ if __name__ == '__main__':
     client.on_connect = on_connect
     client.connect(host="eclipse.usc.edu", port=11000, keepalive=60)
     client.loop_start()
+     
+    
     
     payload = _username + " has joined the room."
     client.publish("P2P/Message", payload)
     
     lis = Listener(on_press=on_press)
     lis.start() # start to listen on a separate thread  
-    	
+    led = 0   
     #setRGB(100,100,100) #bright screen
     while True:
-    	#Keyboard Handler
+        #Keyboard Handler
         on_press(lis)
-        lis.join()
-        
+        #lis.join() 
         #Poll USR value & publish (always)
+        time.sleep(1)
         distance = grovepi.ultrasonicRead(ultPrt)
         #client.publish("P2P/ultrasonicRanger", distance)
-             
-        if(distance < 200):
+           
+        if(distance < 200 and led == 0):
+            led = 1
             client.publish("P2P/LED", 'LED_ON')
             payload = _username + " is at their keyboard."
-    	    client.publish("P2P/Message", payload)
-        else
+            client.publish("P2P/Message", payload)
+        elif(distance > 200 and led == 1):
+            led = 0
             client.publish("P2P/LED", 'LED_OFF')
             payload = _username + " is away from their keyboard."
-    	    client.publish("P2P/Message", payload)
+            client.publish("P2P/Message", payload)
+        
+        
           
-          
-        time.sleep(1)
+        
         
 
