@@ -21,10 +21,9 @@ sys.path.append('../../Software/Python/grove_rgb_lcd')
 import grovepi
 _username = ""
 
-ultPrt = 8 # D8 is the port for ultrasonic ranger
 ledPrt = 2 # D2 Status LED
+ultPrt = 4 # D4 is the port for ultrasonic ranger
 grovepi.pinMode(ledPrt,"OUTPUT")
-grovepi.pinMode(ultPrt, "INPUT")
 
 def on_connect(client, userdata, flags, rc):
     print("Connected to server (i.e., broker) with result code "+str(rc))
@@ -85,7 +84,7 @@ def on_press(key):
     elif(k_c != ''):
         buf.append(k_c)
     	
-if __name__ == '__main__':
+if __name__ == '__main__':   
     print("Enter your username: ")
     _username = input()
     
@@ -104,24 +103,25 @@ if __name__ == '__main__':
     	
     #setRGB(100,100,100) #bright screen
     while True:
-    	#Keyboard Handler
-        on_press(lis)
-        lis.join()
-        
-        #Poll USR value & publish (always)
+        #Poll USR value & publish (always)      
+        time.sleep(0.2)
         distance = grovepi.ultrasonicRead(ultPrt)
+        print(distance)
         #client.publish("P2P/ultrasonicRanger", distance)
              
         if(distance < 200):
             client.publish("P2P/LED", 'LED_ON')
             payload = _username + " is at their keyboard."
     	    client.publish("P2P/Message", payload)
-        else
+        else:
             client.publish("P2P/LED", 'LED_OFF')
             payload = _username + " is away from their keyboard."
     	    client.publish("P2P/Message", payload)
+    	    
+     #Keyboard Handler
+     on_press(lis)
+     lis.join()
           
           
-        time.sleep(1)
         
 
