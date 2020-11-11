@@ -1,11 +1,3 @@
-"""EE 250L Lab 04 Starter Code
-
-#Robert Sutherland, Seth Krieger
-#GIT: https://github.com/usc-ee250-fall2020/lab05-rob/tree/lab05/ee250/lab05
-#Drive: https://drive.google.com/drive/folders/13Ljqi71uNqkf6xp1ku9zclpA9hRe3q3O?usp=sharing 
-
-Run rpi_pub_and_sub.py on your Raspberry Pi."""
-
 import paho.mqtt.client as mqtt
 import time
 import sys
@@ -100,28 +92,23 @@ if __name__ == '__main__':
     
     lis = Listener(on_press=on_press)
     lis.start() # start to listen on a separate thread  
-    	
+    led = 1
     #setRGB(100,100,100) #bright screen
     while True:
+        #Keyboard Handler
+        on_press(lis)
+        
         #Poll USR value & publish (always)      
-        time.sleep(0.2)
+        time.sleep(1)
         distance = grovepi.ultrasonicRead(ultPrt)
-        print(distance)
         #client.publish("P2P/ultrasonicRanger", distance)
              
-        if(distance < 200):
+        if(distance < 200 and led == 0):
             client.publish("P2P/LED", 'LED_ON')
             payload = _username + " is at their keyboard."
     	    client.publish("P2P/Message", payload)
-        else:
+        elif(distance > 200 and led == 1:
             client.publish("P2P/LED", 'LED_OFF')
             payload = _username + " is away from their keyboard."
     	    client.publish("P2P/Message", payload)
-    	    
-     #Keyboard Handler
-     on_press(lis)
-     lis.join()
-          
-          
-        
-
+    	        	    

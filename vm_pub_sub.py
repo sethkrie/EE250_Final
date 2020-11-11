@@ -19,27 +19,11 @@ def on_connect(client, userdata, flags, rc):
     
     #We could just make USR data available to the Flask server and simply publish to it without the callbacks. Maybe a bit of a cleaner design
     client.subscribe("P2P/ultrasonicRanger")
-    client.message_callback_add("P2P/ultrasonicRanger", ult_callback)
     client.subscribe("P2P/Message")  
     client.message_callback_add("P2P/Message", Message_callback) 
-    client.subscribe("P2P/LED")
-    client.message_callback_add("P2P/LED", led_callback)
+    #client.subscribe("P2P/LED")
     
-def ult_callback(client, userdata, message):
-    #the third argument is 'message' here unlike 'msg' in on_message 
-    print(message.topic + " " + "\"" + 
-        str(message.payload, "utf-8") + "\"")
 
-#Custom callbacks need to be structured with three args like on_message()
-def led_callback(client, userdata, message):
-    #the third argument is 'message' here unlike 'msg' in on_message
-    time.sleep(.5)
-    print(message.topic + " " + "\"" + 
-        str(message.payload, "utf-8") + "\"")
-    if str(message.payload, "utf-8")== "LED_ON":
-    	grovepi.digitalWrite(ledPrt, 1) #Turn LED on
-    elif str(message.payload, "utf-8")== "LED_OFF":
-    	grovepi.digitalWrite(ledPrt, 0) #Turn LED off
 
 def Message_callback(client, userdata, message):
     #the third argument is 'message' here unlike 'msg' in on_message 
