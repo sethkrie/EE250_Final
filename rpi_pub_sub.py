@@ -1,5 +1,8 @@
 """EE 250L Lab 04 Starter Code
 
+NOT FOR PROJECT!!!!
+
+
 #Robert Sutherland, Seth Krieger
 #GIT: https://github.com/usc-ee250-fall2020/lab05-rob/tree/lab05/ee250/lab05
 #Drive: https://drive.google.com/drive/folders/13Ljqi71uNqkf6xp1ku9zclpA9hRe3q3O?usp=sharing 

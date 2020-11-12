@@ -41,9 +41,9 @@ def led_callback(client, userdata, message):
     print(message.topic + " " + "\"" + 
         str(message.payload, "utf-8") + "\"")
     if str(message.payload, "utf-8")== "LED_ON":
-    	grovepi.digitalWrite(ledPrt, 1) #Turn LED on
+       grovepi.digitalWrite(ledPrt, 1) #Turn LED on
     elif str(message.payload, "utf-8")== "LED_OFF":
-    	grovepi.digitalWrite(ledPrt, 0) #Turn LED off
+       grovepi.digitalWrite(ledPrt, 0) #Turn LED off
 
 def Message_callback(client, userdata, message):
     #the third argument is 'message' here unlike 'msg' in on_message 
@@ -51,8 +51,7 @@ def Message_callback(client, userdata, message):
     if(payL[1] != _username[1]):
         print(payL)
     #setText_norefresh(str(message.payload, "utf-8"))
-
-    	  
+      
 #Default message callback. Please use custom callbacks.
 def on_message(client, userdata, msg):
     print("on_message: " + msg.topic + " " + str(msg.payload, "utf-8"))
@@ -75,7 +74,7 @@ def on_press(key):
         buf.clear()
     elif(k_c != ''):
         buf.append(k_c)
-    	
+    
 if __name__ == '__main__':   
     print("Enter your username: ")
     _username = input()
@@ -106,9 +105,8 @@ if __name__ == '__main__':
         if(distance < 200 and led == 0):
             client.publish("P2P/LED", 'LED_ON')
             payload = _username + " is at their keyboard."
-    	    client.publish("P2P/Message", payload)
+            client.publish("P2P/Message", payload)
         elif(distance > 200 and led == 1:
             client.publish("P2P/LED", 'LED_OFF')
             payload = _username + " is away from their keyboard."
-    	    client.publish("P2P/Message", payload)
-    	        	    
+            client.publish("P2P/Message", payload)
