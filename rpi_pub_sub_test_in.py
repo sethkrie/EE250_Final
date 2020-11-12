@@ -106,7 +106,7 @@ if __name__ == '__main__':
             client.publish("P2P/LED", 'LED_ON')
             payload = _username + " is at their keyboard."
             client.publish("P2P/Message", payload)
-        elif(distance > 200 and led == 1:
+        elif(distance > 200 and led == 1):
             client.publish("P2P/LED", 'LED_OFF')
             payload = _username + " is away from their keyboard."
             client.publish("P2P/Message", payload)
