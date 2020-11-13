@@ -22,35 +22,33 @@ def on_connect(client, userdata, flags, rc):
     #subscribe to topics of interest here
     
     #We could just make USR data available to the Flask server and simply publish to it without the callbacks. Maybe a bit of a cleaner design
-    client.subscribe("P2P/ultrasonicRanger")
-    client.message_callback_add("P2P/ultrasonicRanger", ult_callback)
+    client.subscribe("P2P/Users")  
+    client.message_callback_add("P2P/Users", users_calback)   
     client.subscribe("P2P/Message")  
-    client.message_callback_add("P2P/Message", Message_callback) 
-    client.subscribe("P2P/LED")
-    client.message_callback_add("P2P/LED", led_callback)
-    
-def ult_callback(client, userdata, message):
-    #the third argument is 'message' here unlike 'msg' in on_message 
-    print(message.topic + " " + "\"" + 
-        str(message.payload, "utf-8") + "\"")
+    client.message_callback_add("P2P/Message", message_callback) 
 
-#Custom callbacks need to be structured with three args like on_message()
-def led_callback(client, userdata, message):
-    #the third argument is 'message' here unlike 'msg' in on_message
-    time.sleep(.5)
-    print(message.topic + " " + "\"" + 
-        str(message.payload, "utf-8") + "\"")
-    if str(message.payload, "utf-8")== "LED_ON":
-       grovepi.digitalWrite(ledPrt, 1) #Turn LED on
-    elif str(message.payload, "utf-8")== "LED_OFF":
-       grovepi.digitalWrite(ledPrt, 0) #Turn LED off
-
-def Message_callback(client, userdata, message):
+def message_callback(client, userdata, message):
     #the third argument is 'message' here unlike 'msg' in on_message 
     payL = str(message.payload, "utf-8")
     if(payL[1] != _username[1]):
         print(payL)
-    #setText_norefresh(str(message.payload, "utf-8"))
+
+#Users topic will store the client_ids of both clients.
+#Will have USR data published to it & the 'middleman' will publish LED_ON if both users are present.
+def users_callback(client, userdata, message):
+    #the third argument is 'message' here unlike 'msg' in on_message
+    time.sleep(.5)
+    if str(message.payload, "utf-8")== "LED_ON")      
+       print('Both users are present.')
+       grovepi.digitalWrite(ledPrt, 1) #Turn LED on
+    elif str(message.payload, "utf-8")== "LED_OFF":
+       grovepi.digitalWrite(ledPrt, 0) #Turn LED off
+
+def message_callback(client, userdata, message):
+    #the third argument is 'message' here unlike 'msg' in on_message 
+    payL = str(message.payload, "utf-8")
+    if(payL[1] != _username[1]):
+        print(payL)
       
 #Default message callback. Please use custom callbacks.
 def on_message(client, userdata, msg):
@@ -80,13 +78,16 @@ def on_press(key):
 if __name__ == '__main__':   
     print("Enter your username: ")
     _username = input()
+    #Inform the middleman of who joined.
+    client.publish("P2P/Users", _username)
     
-    #this section is covered in publisher_and_subscriber_example.py
-    client = mqtt.Client()
+    #Instantiate MQTT client.
+    client = mqtt.Client(client_id = _username)
     client.on_message = on_message
     client.on_connect = on_connect
     client.connect(host="eclipse.usc.edu", port=11000, keepalive=60)
     client.loop_start()
+    
     
     payload = _username + " has joined the room."
     client.publish("P2P/Message", payload)
@@ -102,10 +103,10 @@ if __name__ == '__main__':
         #Poll USR value & publish (always)      
         time.sleep(1)
         distance = grovepi.ultrasonicRead(ultPrt)
-        #client.publish("P2P/ultrasonicRanger", distance)
-             
+        
+        #Publish user's to topic users      
+        client.publish("P2P/Users", distance)
         if(distance < 200 and led == 0):
-            client.publish("P2P/LED", 'LED_ON')
             payload = _username + " is at their keyboard."
             client.publish("P2P/Message", payload)
         elif(distance > 200 and led == 1):
