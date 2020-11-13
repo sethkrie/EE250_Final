@@ -22,8 +22,8 @@ def on_connect(client, userdata, flags, rc):
     #subscribe to topics of interest here
     
     #We could just make USR data available to the Flask server and simply publish to it without the callbacks. Maybe a bit of a cleaner design
-    client.subscribe("P2P/Users")  
-    client.message_callback_add("P2P/Users", users_calback)   
+    client.subscribe("P2P/users")  
+    client.message_callback_add("P2P/users", users_calback)   
     client.subscribe("P2P/Message")  
     client.message_callback_add("P2P/Message", message_callback) 
 
@@ -85,11 +85,7 @@ if __name__ == '__main__':
     client.on_message = on_message
     client.on_connect = on_connect
     client.connect(host="eclipse.usc.edu", port=11000, keepalive=60)
-    client.loop_start()
-    
-    
-    payload = _username + " has joined the room."
-    client.publish("P2P/Message", payload)
+    client.loop_start()   
     
     lis = Listener(on_press=on_press)
     lis.start() # start to listen on a separate thread  

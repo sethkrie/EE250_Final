@@ -13,7 +13,7 @@ def on_connect(client, userdata, flags, rc):
     
     #We could just make USR data available to the Flask server and simply publish to it without the callbacks. Maybe a bit of a cleaner design
     client.subscribe("P2P/Users")  
-    client.message_callback_add("P2P/Users", users_calback)   
+    client.message_callback_add("P2P/users", users_calback)   
     client.subscribe("P2P/Message")  
     client.message_callback_add("P2P/Message", message_callback) 
 
@@ -27,15 +27,18 @@ def message_callback(client, userdata, message):
 #Will have USR data published to it & the 'middleman' will publish LED_ON if both users are present.
 def users_callback(client, userdata, message):
     #check if the client is already connected
+    print(str(message.payload, "utf-8"))
+    print(status)
     if(client in connected_clients):
         idx = connected_clients.index(client)
-        if(message.payload < 200):
-            #The client is at their keyboard
+        if(int(message.payload) < 200):
+            #The client is at their keyboard           
             status[idx] = 1
-         else:
+        else:
             status[idx] = 0
     else:
         connected_clients.append(client)
+        status.append(0)
         payload = client + " has joined the room."
         client.publish("P2P/Message", payload)
         
@@ -43,8 +46,7 @@ def users_callback(client, userdata, message):
 def message_callback(client, userdata, message):
     #the third argument is 'message' here unlike 'msg' in on_message 
     payL = str(message.payload, "utf-8")
-    if(payL[1] != _username[1]):
-        print(payL)
+    print(payL)
       
 #Default message callback. Please use custom callbacks.
 def on_message(client, userdata, msg):
@@ -55,14 +57,14 @@ if __name__ == '__main__':
     
     
     #Instantiate MQTT client.
-    client = mqtt.Client(client_id = _username)
+    client = mqtt.Client()
     client.on_message = on_message
     client.on_connect = on_connect
     client.connect(host="eclipse.usc.edu", port=11000, keepalive=60)
     client.loop_start()
   
     while True:
-    
+        time.sleep(1)
         if(0 not in status):
             client.publish("P2P/users", "LED_ON")
         else:
