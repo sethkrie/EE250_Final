@@ -74,6 +74,8 @@ def on_press(key):
         buf.clear()
     elif(k_c != ''):
         buf.append(k_c)
+    elif(key == Key.backspace):
+        buf.pop()
     
 if __name__ == '__main__':   
     print("Enter your username: ")
