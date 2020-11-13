@@ -37,12 +37,11 @@ def message_callback(client, userdata, message):
 #Will have USR data published to it & the 'middleman' will publish LED_ON if both users are present.
 def users_callback(client, userdata, message):
     #the third argument is 'message' here unlike 'msg' in on_message
-    time.sleep(.5)
-    if str(message.payload, "utf-8")== "LED_ON")      
-       print('Both users are present.')
-       grovepi.digitalWrite(ledPrt, 1) #Turn LED on
+    if str(message.payload, "utf-8")== "LED_ON":      
+        print('Both users are present.')
+        grovepi.digitalWrite(ledPrt, 1) #Turn LED on
     elif str(message.payload, "utf-8")== "LED_OFF":
-       grovepi.digitalWrite(ledPrt, 0) #Turn LED off
+        grovepi.digitalWrite(ledPrt, 0) #Turn LED off
 
 def message_callback(client, userdata, message):
     #the third argument is 'message' here unlike 'msg' in on_message 
@@ -78,8 +77,8 @@ def on_press(key):
 if __name__ == '__main__':   
     print("Enter your username: ")
     _username = input()
-    #Inform the middleman of who joined.
-    client.publish("P2P/Users", _username)
+    #Inform the middleman of who joined.  
+    #client.publish("P2P/users", "U: " + _username)
     
     #Instantiate MQTT client.
     client = mqtt.Client(client_id = _username)
@@ -105,11 +104,10 @@ if __name__ == '__main__':
         distance = grovepi.ultrasonicRead(ultPrt)
         
         #Publish user's to topic users      
-        client.publish("P2P/Users", distance)
-        if(distance < 200 and led == 0):
+        client.publish("P2P/users", distance)
+        if(distance < 200):
             payload = _username + " is at their keyboard."
             client.publish("P2P/Message", payload)
-        elif(distance > 200 and led == 1):
-            client.publish("P2P/LED", 'LED_OFF')
+        elif(distance > 200):
             payload = _username + " is away from their keyboard."
             client.publish("P2P/Message", payload)
