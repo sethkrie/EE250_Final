@@ -11,18 +11,22 @@ import grovepi
 ultPrt = 4 # D4 is the port for ultrasonic ranger
            
 # Moving average of distance values from USR 
-distance_window = [200]
-plt.axis([0, 200, 0, 500])
+t = 10
+fs = 20
+ts = 0 : (1/fs) : t
+fig = plt.figure()
 
+distance_window = [(1/fs) * t]
 for count in distance_window:
     # Poll USR value   
     time.sleep(0.05)
     distance_window[count] = grovepi.ultrasonicRead(ultPrt)
-    plt.scatter(count, distance_window[count])
-    plt.pause(0.05)
-    
-plt.show()           
+    print(distance_window[count]))
+            
 # Publish user's average distance over 10 seconds sampled at 20Hz to /users
 avg_distance = sum(distance_window[:]) / len(distance_window)
+
+plt.scatter(count, distance_window) 
 plt.scatter(count, avg_distance)
+fig.show() 
 
