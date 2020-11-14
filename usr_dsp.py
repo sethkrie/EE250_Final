@@ -14,7 +14,7 @@ ultPrt = 4 # D4 is the port for ultrasonic ranger
 t = 10
 fs = 20
 distance_window = []
-ts = np.linspace(0, 200, 1)
+ts = np.linspace(1, 200, 1)
 
 for i in range(t * fs):
     # Poll USR value   
@@ -25,7 +25,9 @@ for i in range(t * fs):
 # Publish user's average distance over 10 seconds sampled at 20Hz to /users
 avg_distance = sum(distance_window[:]) / len(distance_window)
 
-plt.scatter(ts, distance_window) 
-plt.scatter(ts, avg_distance)
+plt.scatter(ts, distance_window)
+print(len(ts))
+print(len(distance_window))
+print(avg_distance)
 plt.show() 
 
