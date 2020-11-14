@@ -115,7 +115,7 @@ if __name__ == '__main__':
         # Look at the averge of the moving window across 10s
         # Publish user's average distance over 10 seconds sampled at 20Hz to /users
         avg = numpy.sum(avg_distance) / len(distance_window)      
-        client.publish("P2P/users", _username + str(int(avg)))
+        client.publish("P2P/users", _username + ":" +str(int(avg)))
         time.sleep(0.01)
         avg_distance.clear()
         
