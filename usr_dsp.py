@@ -21,7 +21,7 @@ for i in range(t * fs):
     # Poll USR value   
     time.sleep(0.05)
     distance_window.append(grovepi.ultrasonicRead(ultPrt))
-    print(distance_window[i)
+    print(distance_window[i])
             
 # Publish user's average distance over 10 seconds sampled at 20Hz to /users
 avg_distance = sum(distance_window[:]) / len(distance_window)
