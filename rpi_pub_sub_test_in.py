@@ -104,12 +104,12 @@ if __name__ == '__main__':
                 # Poll USR value   
                 time.sleep(0.05)
                 distance_window.append(grovepi.ultrasonicRead(ultPrt))      
-            avg_distance.append(numpy.cumsum(distance_window) / len(distance_window))
+            avg_distance.append(numpy.sum(distance_window) / len(distance_window))
                      
         # We don't want excessive updates in case a user bumps the sensor.
         # Look at the averge of the moving window across 10s
         # Publish user's average distance over 10 seconds sampled at 20Hz to /users
-        avg = numpy.cumsum(avg_distance) / len(distance_window)      
+        avg = numpy.sum(avg_distance) / len(distance_window)      
         client.publish("P2P/users", int(avg))
         avg_distance.clear()
         
