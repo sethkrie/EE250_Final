@@ -17,8 +17,8 @@ plt.axis([0, 200, 0, 500])
 for count in distance_window:
     # Poll USR value   
     time.sleep(0.05)
-    distance[count] = grovepi.ultrasonicRead(ultPrt)
-    plt.scatter(count, distance[count])
+    distance_window[count] = grovepi.ultrasonicRead(ultPrt)
+    plt.scatter(count, distance_window[count])
     plt.pause(0.05)
     
 plt.show()           
