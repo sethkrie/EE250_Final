@@ -99,9 +99,9 @@ if __name__ == '__main__':
         distance_window = [20]
         avg_distance    = [10]
         count = 0
-        for i in range t:
+        for i in range(t):
             # Observe a data in a window of 5 samples (1 second)
-            for j in range fs:
+            for j in range(fs):
                 # Poll USR value   
                 time.sleep(0.05)
                 distance_window[j] = grovepi.ultrasonicRead(ultPrt)       
