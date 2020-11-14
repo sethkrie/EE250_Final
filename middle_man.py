@@ -37,9 +37,7 @@ def users_callback(client, userdata, message):
             status[idx] = True
     else:
         connected_clients.append(user)
-        status.append(0)
-        payload = user + " has joined the room."
-        client.publish("P2P/Message", payload)
+        status.append(True)
         
 def message_callback(client, userdata, message):
     payL = str(message.payload, "utf-8")
@@ -60,7 +58,6 @@ if __name__ == '__main__':
     while True:
         time.sleep(2)
         print(status)
-        print(connected_clients)
         if(len(status) > 1):
             if(False not in status):
                 client.publish("P2P/users", "LED_ON")

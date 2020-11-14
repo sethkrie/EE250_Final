@@ -75,8 +75,8 @@ def on_press(key):
 if __name__ == '__main__':   
     print("Enter your username: ")
     _username = input()
-    #Inform the middleman of who joined.  
-    #client.publish("P2P/users", "U: " + _username)
+    payload = _username + " has joined the room."
+    client.publish("P2P/Message", payload)
     
     #Instantiate MQTT client.
     client = mqtt.Client(client_id = _username)
