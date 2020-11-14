@@ -103,8 +103,8 @@ if __name__ == '__main__':
             for j in range(fs):
                 # Poll USR value   
                 time.sleep(0.05)
-                distance_window.append = grovepi.ultrasonicRead(ultPrt)       
-            avg_distance.append = numpy.cumsum(distance_window) / len(distance_window)
+                distance_window.append(grovepi.ultrasonicRead(ultPrt))      
+            avg_distance.append(numpy.cumsum(distance_window) / len(distance_window))
                      
         # We don't want excessive updates in case a user bumps the sensor.
         # Look at the averge of the moving window across 10s
