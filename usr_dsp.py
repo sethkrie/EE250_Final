@@ -15,11 +15,11 @@ t = 10
 fs = 20
 ts = np.linspace(0, 10, ((1/fs) * t)
 
-distance_window = [(1/fs) * t]
+distance = []
 for count in distance_window:
     # Poll USR value   
     time.sleep(0.05)
-    distance_window[count] = grovepi.ultrasonicRead(ultPrt)
+    distance_window.append(grovepi.ultrasonicRead(ultPrt))
     print(distance_window[count]))
             
 # Publish user's average distance over 10 seconds sampled at 20Hz to /users
