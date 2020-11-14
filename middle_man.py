@@ -2,10 +2,6 @@ import paho.mqtt.client as mqtt
 import time
 import sys
 
-#List containing the status (1,0)
-status = []
-connected_clients = []
-
 def on_connect(client, userdata, flags, rc):
     print("Connected to server (i.e., broker) with result code "+ str(rc))
     #subscribe to topics of interest here
@@ -26,15 +22,18 @@ def message_callback(client, userdata, message):
 # Will have USR data published to it & the 'middleman' will publish LED_ON if both users are present.
 def users_callback(client, userdata, message):
     # Check if the client is already connected
-    user = str(client)
-    print(str(message.payload, "utf-8"))
+    payload = str(message.payload, "utf-8")
+    user = payload[:payload.index(":")]
+    data = int(payload[payload.index(":") + 1:])
+    
     if(user in connected_clients):
         idx = connected_clients.index(user)
-        if(int(message.payload) > 200 or int(message.payload) < 0):
+        if(data > 200 or data < 0):
             # The client is not at their keyboard              
             status[idx] = False    
         else:
             status[idx] = True
+    
     else:
         connected_clients.append(user)
         status.append(True)
@@ -47,6 +46,10 @@ def message_callback(client, userdata, message):
 def on_message(client, userdata, msg):
     print("on_message: " + msg.topic + " " + str(msg.payload, "utf-8"))
     
+    
+#List containing the status (1,0)
+status = []
+connected_clients = []
 if __name__ == '__main__':      
     #Instantiate MQTT client.
     client = mqtt.Client()
@@ -58,6 +61,7 @@ if __name__ == '__main__':
     while True:
         time.sleep(2)
         print(status)
+        print(connected_clients)
         if(len(status) > 1):
             if(False not in status):
                 client.publish("P2P/users", "LED_ON")

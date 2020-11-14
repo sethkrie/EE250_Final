@@ -66,6 +66,7 @@ def on_press(key):
         payload = ''
         payload = _username + ": " + payload.join(buf) 
         client.publish("P2P/Message", payload) #In MQTT, publish this buf to the broker
+        time.sleep(0.01)
         buf.clear()
     elif(k_c != ''):
         buf.append(k_c)
@@ -78,7 +79,7 @@ if __name__ == '__main__':
     
     
     #Instantiate MQTT client.
-    client = mqtt.Client(client_id = _username)
+    client = mqtt.Client(userdata = _username)
     client.on_message = on_message
     client.on_connect = on_connect
     client.connect(host="eclipse.usc.edu", port=11000, keepalive=60)
@@ -86,6 +87,7 @@ if __name__ == '__main__':
      
     payload = _username + " has joined the room."
     client.publish("P2P/Message", payload)
+    time.sleep(0.01)
     
     lis = Listener(on_press=on_press)
     lis.start() # Start to listen on a separate thread  
@@ -112,7 +114,8 @@ if __name__ == '__main__':
         # Look at the averge of the moving window across 10s
         # Publish user's average distance over 10 seconds sampled at 20Hz to /users
         avg = numpy.sum(avg_distance) / len(distance_window)      
-        client.publish("P2P/users", int(avg))
+        client.publish("P2P/users", _username + str(int(avg)))
+        time.sleep(0.01)
         avg_distance.clear()
         
 
