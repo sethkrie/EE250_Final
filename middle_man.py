@@ -2,11 +2,12 @@ import paho.mqtt.client as mqtt
 import time
 import sys
 
+#List containing the status (1,0)
 status = []
 connected_clients = []
 
 def on_connect(client, userdata, flags, rc):
-    print("Connected to server (i.e., broker) with result code "+str(rc))
+    print("Connected to server (i.e., broker) with result code "+ str(rc))
     #subscribe to topics of interest here
     
     # We could just make USR data available to the Flask server and simply publish to it without the callbacks. Maybe a bit of a cleaner design
@@ -25,22 +26,22 @@ def message_callback(client, userdata, message):
 # Will have USR data published to it & the 'middleman' will publish LED_ON if both users are present.
 def users_callback(client, userdata, message):
     # Check if the client is already connected
+    user = str(client)
     print(str(message.payload, "utf-8"))
-    if(str(client) in connected_clients):
-        idx = connected_clients.index(str(client))
-        if(int(message.payload) < 200):
-            # The client is at their keyboard              
-            status[idx] = 1    
+    if(user in connected_clients):
+        idx = connected_clients.index(user)
+        if(int(message.payload) > 200 or int(message.payload) < 0):
+            # The client is not at their keyboard              
+            status[idx] = False    
         else:
-            status[idx] = 0
+            status[idx] = True
     else:
-        connected_clients.append(str(client))
+        connected_clients.append(user)
         status.append(0)
-        payload = str(client) + " has joined the room."
+        payload = user + " has joined the room."
         client.publish("P2P/Message", payload)
         
 def message_callback(client, userdata, message):
-    #the third argument is 'message' here unlike 'msg' in on_message 
     payL = str(message.payload, "utf-8")
     print(payL)
       
@@ -57,11 +58,11 @@ if __name__ == '__main__':
     client.loop_start()
   
     while True:
-        time.sleep(1)
+        time.sleep(2)
         print(status)
         print(connected_clients)
         if(len(status) > 1):
-            if(0 not in status):
+            if(False not in status):
                 client.publish("P2P/users", "LED_ON")
             else:
                 client.publish("P2P/users", "LED_OFF")       

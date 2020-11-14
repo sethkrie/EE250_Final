@@ -3,12 +3,9 @@ import time
 import sys
 from pynput.keyboard import Listener, Key
 
-# By appending the folder of all the GrovePi libraries to the system path here,
-# we are successfully `import grovepi`
 sys.path.append('../../Software/Python/')
 # This append is to support importing the LCD library.
 sys.path.append('../../Software/Python/grove_rgb_lcd')
-
 
 import grovepi
 _username = ""
@@ -90,20 +87,19 @@ if __name__ == '__main__':
     lis = Listener(on_press=on_press)
     lis.start() # Start to listen on a separate thread  
     led = 1
-    #setRGB(100,100,100) #bright screen
-    while True:
-        #Keyboard Handler
+           
+    while True:       
+        # Keyboard Handler
         on_press(lis)
         
-        #Poll USR value & publish (always)      
-        time.sleep(1)
-        distance = grovepi.ultrasonicRead(ultPrt)
-        
-        #Publish user's to topic users      
-        client.publish("P2P/users", distance)
-        if(distance < 200):
-            payload = _username + " is at their keyboard."
-            client.publish("P2P/Message", payload)
-        elif(distance > 200):
-            payload = _username + " is away from their keyboard."
-            client.publish("P2P/Message", payload)
+        # Moving average of distance values from USR 
+        distance_window = [200]
+        for count in distance_window:
+            # Poll USR value   
+            time.sleep(0.05)
+            distance[count] = grovepi.ultrasonicRead(ultPrt)
+            
+        # Publish user's average distance over 10 seconds sampled at 20Hz to /users
+        avg_distance = sum(distance_window[:]) / len(distance_window)      
+        client.publish("P2P/users", avg_distance)
+
