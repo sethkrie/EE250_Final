@@ -23,7 +23,7 @@ def on_connect(client, userdata, flags, rc):
     
     #We could just make USR data available to the Flask server and simply publish to it without the callbacks. Maybe a bit of a cleaner design
     client.subscribe("P2P/users")  
-    client.message_callback_add("P2P/users", users_calback)   
+    client.message_callback_add("P2P/users", users_callback)   
     client.subscribe("P2P/Message")  
     client.message_callback_add("P2P/Message", message_callback) 
 
@@ -88,7 +88,7 @@ if __name__ == '__main__':
     client.loop_start()   
     
     lis = Listener(on_press=on_press)
-    lis.start() # start to listen on a separate thread  
+    lis.start() # Start to listen on a separate thread  
     led = 1
     #setRGB(100,100,100) #bright screen
     while True:

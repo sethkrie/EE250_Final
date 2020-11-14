@@ -23,8 +23,6 @@ def on_connect(client, userdata, flags, rc):
     client.message_callback_add("P2P/Message", Message_callback) 
     #client.subscribe("P2P/LED")
     
-
-
 def Message_callback(client, userdata, message):
     #the third argument is 'message' here unlike 'msg' in on_message 
     payL = str(message.payload, "utf-8")
@@ -44,7 +42,6 @@ def on_press(key):
     
     if(key == Key.space):
         k_c = ' '
-        
  #Add conditional for length limit of message depending on LCD OR scrolling LCD output
     if(key == Key.enter):
         payload = ''
