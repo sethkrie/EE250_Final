@@ -87,7 +87,8 @@ if __name__ == '__main__':
      
     payload = _username + " has joined the room."
     client.publish("P2P/Message", payload)
-    time.sleep(0.01)
+    time.sleep(0.01)  
+    client.publish("P2P/users", _username + ':300')
     
     lis = Listener(on_press=on_press)
     lis.start() # Start to listen on a separate thread  
