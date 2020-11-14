@@ -75,15 +75,17 @@ def on_press(key):
 if __name__ == '__main__':   
     print("Enter your username: ")
     _username = input()
-    payload = _username + " has joined the room."
-    client.publish("P2P/Message", payload)
+    
     
     #Instantiate MQTT client.
     client = mqtt.Client(client_id = _username)
     client.on_message = on_message
     client.on_connect = on_connect
     client.connect(host="eclipse.usc.edu", port=11000, keepalive=60)
-    client.loop_start()   
+    client.loop_start()  
+     
+    payload = _username + " has joined the room."
+    client.publish("P2P/Message", payload)
     
     lis = Listener(on_press=on_press)
     lis.start() # Start to listen on a separate thread  
