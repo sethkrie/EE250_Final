@@ -26,7 +26,7 @@ for count in distance_window:
 # Publish user's average distance over 10 seconds sampled at 20Hz to /users
 avg_distance = sum(distance_window[:]) / len(distance_window)
 
-plt.scatter(count, distance_window) 
-plt.scatter(count, avg_distance)
+plt.scatter(ts, distance_window) 
+plt.scatter(ts, avg_distance)
 fig.show() 
 
