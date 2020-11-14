@@ -13,14 +13,15 @@ ultPrt = 4 # D4 is the port for ultrasonic ranger
 # Moving average of distance values from USR 
 t = 10
 fs = 20
-ts = np.linspace(0, 10, ((1/fs) * t)
+ts = np.linspace(0, 10, ((1/fs) * t))
+#distance_window
 
-distance = []
-for count in distance_window:
+
+for i in range(t * fs):
     # Poll USR value   
     time.sleep(0.05)
     distance_window.append(grovepi.ultrasonicRead(ultPrt))
-    print(distance_window[count]))
+    print(distance_window[i)
             
 # Publish user's average distance over 10 seconds sampled at 20Hz to /users
 avg_distance = sum(distance_window[:]) / len(distance_window)
