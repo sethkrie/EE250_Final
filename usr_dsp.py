@@ -14,7 +14,7 @@ ultPrt = 4 # D4 is the port for ultrasonic ranger
 t = 10
 fs = 20
 distance_window = []
-
+ts = np.linspace(0, 200, 1)
 
 for i in range(t * fs):
     # Poll USR value   
