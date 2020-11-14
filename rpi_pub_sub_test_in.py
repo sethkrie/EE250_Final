@@ -96,20 +96,21 @@ if __name__ == '__main__':
         on_press(lis)
         
         # Moving average of distance values from USR 
-        distance_window = [20]
-        avg_distance    = [10]
-        count = 0
+        avg_distance    = []
         for i in range(t):
             # Observe a data in a window of 5 samples (1 second)
+            distance_window = []
             for j in range(fs):
                 # Poll USR value   
                 time.sleep(0.05)
-                distance_window[j] = grovepi.ultrasonicRead(ultPrt)       
-            avg_distance[i] = numpy.cumsum(distance_window) / len(distance_window)
+                distance_window.append = grovepi.ultrasonicRead(ultPrt)       
+            avg_distance.append = numpy.cumsum(distance_window) / len(distance_window)
                      
         # We don't want excessive updates in case a user bumps the sensor.
         # Look at the averge of the moving window across 10s
         # Publish user's average distance over 10 seconds sampled at 20Hz to /users
-        avg_distance = numpy.cumsum(avg_distance) / len(distance_window)      
-        client.publish("P2P/users", avg_distance)
+        avg = numpy.cumsum(avg_distance) / len(distance_window)      
+        client.publish("P2P/users", avg)
+        avg_distance.clear()
+        
 
