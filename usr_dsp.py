@@ -13,8 +13,7 @@ ultPrt = 4 # D4 is the port for ultrasonic ranger
 # Moving average of distance values from USR 
 t = 10
 fs = 20
-ts = np.linspace(0, 10, ((1/fs) * t))
-#distance_window
+distance_window = []
 
 
 for i in range(t * fs):
