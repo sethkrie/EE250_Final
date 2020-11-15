@@ -34,9 +34,6 @@ def fileAppend(messagePayload):
     appendThis.write(str1.join(fileCont))
     appendThis.close()
 
-    
-
-
 def Message_callback(client, userdata, message):
     #the third argument is 'message' here unlike 'msg' in on_message 
     payL = str(message.payload, "utf-8")
@@ -86,6 +83,5 @@ if __name__ == '__main__':
 
 
     while True:
-        #Keyboard Handler
         time.sleep(1)
 

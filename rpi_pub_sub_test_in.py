@@ -25,13 +25,7 @@ def on_connect(client, userdata, flags, rc):
     client.subscribe("P2P/Message")  
     client.message_callback_add("P2P/Message", message_callback) 
     client.subscribe("P2P/LED")  
-    client.message_callback_add("P2P/LED", LED_callback) 
-
-def message_callback(client, userdata, message):
-    #the third argument is 'message' here unlike 'msg' in on_message 
-    payL = str(message.payload, "utf-8")
-    if(payL[1] != _username[1]):
-        print(payL)
+    client.message_callback_add("P2P/LED", LED_callback)
 
 #Users topic will store the client_ids of both clients.
 #Will have USR data published to it & the 'middleman' will publish LED_ON if both users are present.
