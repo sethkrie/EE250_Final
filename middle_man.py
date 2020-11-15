@@ -4,16 +4,14 @@ import sys
 
 def on_connect(client, userdata, flags, rc):
     print("Connected to server (i.e., broker) with result code "+ str(rc))
-    #subscribe to topics of interest here
+    # Subscribe to topics of interest here
     
-    # We could just make USR data available to the Flask server and simply publish to it without the callbacks. Maybe a bit of a cleaner design
     client.subscribe("P2P/users")  
     client.message_callback_add("P2P/users", users_callback)   
     client.subscribe("P2P/Message")  
     client.message_callback_add("P2P/Message", message_callback) 
 
 def message_callback(client, userdata, message):
-    #the third argument is 'message' here unlike 'msg' in on_message 
     payL = str(message.payload, "utf-8")
     if(payL[1] != _username[1]):
         print(payL)
@@ -21,13 +19,12 @@ def message_callback(client, userdata, message):
 # Users topic will store the client_ids of both clients.
 # Will have USR data published to it & the 'middleman' will publish LED_ON if both users are present.
 def users_callback(client, userdata, message):
-    # Check if the client is already connected
+    # Packet format is 'user_id':USR_data
     payload = str(message.payload, "utf-8")
     user = payload[:payload.index(":")]
-    data = float(payload[payload.index(":") + 1:])
-    print(payload)
-    print(user + ":" + str(data))
+    data = float(payload[payload.index(":") + 1:]) 
     
+    # Check if the client is already connected   
     if(user in connected_clients):
         idx = connected_clients.index(user)
         if(data > 200 or data < 0):
@@ -61,12 +58,17 @@ if __name__ == '__main__':
     client.loop_start()
   
     while True:
-        time.sleep(2)
-        print(status)
-        print(connected_clients)
-        if(len(status) > 1):
-            if(False not in status):
-                client.publish("P2P/users", "LED_ON")
-            else:
-                client.publish("P2P/users", "LED_OFF")       
+        has_printed = False
+        while(False in status):
+            if(has_printed == False):
+                AFK = status.index(False)
+                client.publish("P2P/Message", str(connected_clients[AFK] + " is not at their keyboard."))
+                client.publish("P2P/LED", "LED_OFF") 
+                has_printed = True 
+        has_printed = False                 
+        while(status.count(True) == len(status)):
+            if(has_printed == False):
+                client.publish("P2P/Message", "All users are at their keyboards.")
+                client.publish("P2P/LED", "LED_ON") 
+                has_printed = True    
         

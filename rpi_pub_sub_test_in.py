@@ -24,6 +24,8 @@ def on_connect(client, userdata, flags, rc):
     client.message_callback_add("P2P/users", users_callback)   
     client.subscribe("P2P/Message")  
     client.message_callback_add("P2P/Message", message_callback) 
+    client.subscribe("P2P/LED")  
+    client.message_callback_add("P2P/LED", LED_callback) 
 
 def message_callback(client, userdata, message):
     #the third argument is 'message' here unlike 'msg' in on_message 
@@ -33,10 +35,9 @@ def message_callback(client, userdata, message):
 
 #Users topic will store the client_ids of both clients.
 #Will have USR data published to it & the 'middleman' will publish LED_ON if both users are present.
-def users_callback(client, userdata, message):
+def LED_callback(client, userdata, message):
     #the third argument is 'message' here unlike 'msg' in on_message
-    if str(message.payload, "utf-8")== "LED_ON":      
-        print('Both users are present.')
+    if str(message.payload, "utf-8")== "LED_ON":
         grovepi.digitalWrite(ledPrt, 1) #Turn LED on
     elif str(message.payload, "utf-8")== "LED_OFF":
         grovepi.digitalWrite(ledPrt, 0) #Turn LED off
@@ -44,7 +45,7 @@ def users_callback(client, userdata, message):
 def message_callback(client, userdata, message):
     #the third argument is 'message' here unlike 'msg' in on_message 
     payL = str(message.payload, "utf-8")
-    if(payL[1] != _username[1]):
+    if(payL[1] != _username[1] and ":" in payL):
         print(payL)
       
 #Default message callback. Please use custom callbacks.
@@ -88,7 +89,6 @@ if __name__ == '__main__':
     payload = _username + " has joined the room."
     client.publish("P2P/Message", payload)
     time.sleep(0.01)  
-    client.publish("P2P/users", _username + ":300")
     
     lis = Listener(on_press=on_press)
     lis.start() # Start to listen on a separate thread  
@@ -100,22 +100,20 @@ if __name__ == '__main__':
         # Keyboard Handler
         on_press(lis)
         time.sleep(1)
-        # # Moving average of distance values from USR 
-        # avg_distance    = []
-        # for i in range(t):
-        #     # Observe a data in a window of 5 samples (1 second)
-        #     distance_window = []
-        #     for j in range(fs):
-        #         # Poll USR value   
-        #         time.sleep(0.05)
-        #         distance_window.append(grovepi.ultrasonicRead(ultPrt))      
-        #     avg_distance.append(numpy.sum(distance_window) / len(distance_window))
+        # Moving average of distance values from USR 
+        avg_distance    = []
+        for i in range(t):
+            # Observe a data in a window of 5 samples (1 second)
+            distance_window = []
+            for j in range(fs):
+                # Poll USR value   
+                time.sleep(0.05)
+                distance_window.append(grovepi.ultrasonicRead(ultPrt))      
+            avg_distance.append(numpy.sum(distance_window) / len(distance_window))
                      
         # # We don't want excessive updates in case a user bumps the sensor.
         # # Look at the averge of the moving window across 10s
         # # Publish user's average distance over 10 seconds sampled at 20Hz to /users
-        # avg = numpy.sum(avg_distance) / len(distance_window)  
-        # print(avg)    
-        # client.publish("P2P/users", _username + ":" + str(avg))
-        # time.sleep(0.1)
-        # avg_distance.clear()
+        avg = numpy.sum(avg_distance) / len(distance_window)   
+        client.publish("P2P/users", str(_username + ":" + str(avg)))
+        avg_distance.clear()

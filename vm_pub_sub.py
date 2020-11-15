@@ -25,7 +25,8 @@ def on_connect(client, userdata, flags, rc):
 def Message_callback(client, userdata, message):
     #the third argument is 'message' here unlike 'msg' in on_message 
     payL = str(message.payload, "utf-8")
-    print(payL)
+    if(payL[1] != _username[1] and ":" in payL):
+        print(payL)
     	  
 #Default message callback. Please use custom callbacks.
 def on_message(client, userdata, msg):
@@ -50,7 +51,10 @@ def on_press(key):
         buf.append(k_c)
     elif(key == Key.backspace):
         buf.pop()
-    	
+    elif(key == Key.tab):
+        lis.stop()
+        client.disconnect()
+        
 if __name__ == '__main__':
     print("Enter your username: ")
     _username = input()
@@ -65,20 +69,12 @@ if __name__ == '__main__':
     payload = _username + " has joined the room."
     client.publish("P2P/Message", payload)
     
-    time.sleep(0.01)
-    client.publish("P2P/users", _username + ':300')
-    time.sleep(0.01)
-    
     lis = Listener(on_press=on_press)
     lis.start() # start to listen on a separate thread  
 
-    while True:
-    	#Keyboard Handler
-        lis.join()
-        
-        client.publish("P2P/users", _username + ':100')
+    while True:   
+        client.publish("P2P/users", str(_username + ':100'))
         time.sleep(1)
-        
         on_press(lis)
         
 
