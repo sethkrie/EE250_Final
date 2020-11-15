@@ -18,7 +18,6 @@ def on_connect(client, userdata, flags, rc):
     #subscribe to topics of interest here
     
     #We could just make USR data available to the Flask server and simply publish to it without the callbacks. Maybe a bit of a cleaner design
-    client.subscribe("P2P/ultrasonicRanger")
     client.subscribe("P2P/Message")  
     client.message_callback_add("P2P/Message", Message_callback)
     

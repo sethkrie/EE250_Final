@@ -13,14 +13,13 @@ _username = ""
 
 ledPrt = 2 # D2 Status LED
 ultPrt = 4 # D4 is the port for ultrasonic ranger
+grovepi.pinMode(ledPrt,"OUTPUT")
 
 def on_connect(client, userdata, flags, rc):
     print("Connected to server (i.e., broker) with result code "+str(rc))
     #subscribe to topics of interest here
     
     #We could just make USR data available to the Flask server and simply publish to it without the callbacks. Maybe a bit of a cleaner design
-    client.subscribe("P2P/users")  
-    client.message_callback_add("P2P/users", users_callback)   
     client.subscribe("P2P/Message")  
     client.message_callback_add("P2P/Message", Message_callback) 
     client.subscribe("P2P/LED")  
@@ -55,10 +54,9 @@ def on_press(key):
         k_c = key.char # single-char keys
     except: 
         k_c = ''
-    
+         
     if(key == Key.space):
-        k_c = ' '
-        
+        k_c = ' '     
  #Add conditional for length limit of message depending on LCD OR scrolling LCD output
     if(key == Key.enter):
         payload = ''
@@ -75,10 +73,9 @@ def on_press(key):
 if __name__ == '__main__':   
     print("Enter your username: ")
     _username = input()
-    
-    
+       
     #Instantiate MQTT client.
-    client = mqtt.Client(userdata = _username)
+    client = mqtt.Client()
     client.on_message = on_message
     client.on_connect = on_connect
     client.connect(host="eclipse.usc.edu", port=11000, keepalive=60)
@@ -86,17 +83,15 @@ if __name__ == '__main__':
      
     payload = _username + " has joined the room."
     client.publish("P2P/Message", payload)
-    time.sleep(0.01)  
     
     lis = Listener(on_press=on_press)
     lis.start() # Start to listen on a separate thread
-    
-    
-    grovepi.pinMode(ledPrt,"OUTPUT")
-           
+          
     fs = 20  
     t = 5 
-    while True:       
+    while True:
+        # Keyboard Handler
+        on_press(lis)       
         # Moving average of distance values from USR 
         avg_distance    = []
         for i in range(t):
@@ -115,5 +110,3 @@ if __name__ == '__main__':
         client.publish("P2P/users", str(_username + ":" + str(avg)))
         avg_distance.clear()
         
-        # Keyboard Handler
-        on_press(lis)
