@@ -35,11 +35,15 @@ def LED_callback(client, userdata, message):
         grovepi.digitalWrite(ledPrt, 1) #Turn LED on
     elif str(message.payload, "utf-8")== "LED_OFF":
         grovepi.digitalWrite(ledPrt, 0) #Turn LED off
+        
+def users_callback(client, userdata, message):
 
 def message_callback(client, userdata, message):
     #the third argument is 'message' here unlike 'msg' in on_message 
     payL = str(message.payload, "utf-8")
     if(payL[1] != _username[1] and ":" in payL):
+        print(payL)
+    elif(":" not in payL):
         print(payL)
       
 #Default message callback. Please use custom callbacks.
