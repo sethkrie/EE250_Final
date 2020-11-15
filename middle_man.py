@@ -64,12 +64,11 @@ if __name__ == '__main__':
                 AFK = status.index(False)
                 client.publish("P2P/Message", str(connected_clients[AFK] + " is not at their keyboard."))
                 has_printed = True 
-            client.publish("P2P/LED", "LED_OFF")
-            print('LED OFF')     
+                client.publish("P2P/LED", "LED_OFF")    
         has_printed = False             
         while(status.count(True) == len(status)):
             if(has_printed == False):
                 client.publish("P2P/Message", "All users are at their keyboards.")
                 has_printed = True
-            client.publish("P2P/LED", "LED_ON")     
+                client.publish("P2P/LED", "LED_ON")     
         

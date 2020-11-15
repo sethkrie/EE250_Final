@@ -39,8 +39,7 @@ def LED_callback(client, userdata, message):
 def Message_callback(client, userdata, message):
     #the third argument is 'message' here unlike 'msg' in on_message 
     payL = str(message.payload, "utf-8")
-    if(len(buf) > 1):
-        print(payL)
+    print(payL)
    
       
 #Default message callback. Please use custom callbacks.
