@@ -76,7 +76,7 @@ if __name__ == '__main__':
     lis.start() # start to listen on a separate thread  
 
     while True:   
-        client.publish("P2P/users", str(_username + ':1300'))
+        client.publish("P2P/users", str(_username + ':100'))
         time.sleep(1)
         on_press(lis)
         
