@@ -27,7 +27,7 @@ def users_callback(client, userdata, message):
     # Check if the client is already connected   
     if(user in connected_clients):
         idx = connected_clients.index(user)
-        if(data > 200 or data < 0):
+        if(data > 100 or data < 0):
             # The client is not at their keyboard              
             status[idx] = False    
         else:

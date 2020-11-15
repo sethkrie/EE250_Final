@@ -106,6 +106,5 @@ if __name__ == '__main__':
         # # Publish user's average distance over 10 seconds sampled at 20Hz to /users
         avg = numpy.sum(avg_distance) / len(distance_window)   
         client.publish("P2P/users", str(_username + ":" + str(avg)))
-        print(avg)
         avg_distance.clear()
         
