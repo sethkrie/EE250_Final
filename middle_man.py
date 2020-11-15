@@ -58,13 +58,17 @@ if __name__ == '__main__':
     client.loop_start()
   
     while True:
-        time.sleep(2)
-        print(status)
-        print(connected_clients)
-        if(len(status) > 1):
-            if(False not in status):             
-                client.publish("P2P/users", "All users are at their keyboards.")
-                client.publish("P2P/users", "LED_ON")
-            else:
-                client.publish("P2P/users", "LED_OFF")       
+        has_printed = False
+        while(False in status):
+            if(has_printed == False):
+                AFK = status.index(False)
+                client.publish("P2P/Message", str(connected_clients[AFK] + " is not at their keyboard."))
+                client.publish("P2P/LED", "LED_OFF") 
+                has_printed = True 
+        has_printed = False                 
+        while(status.count(True) == len(status)):
+            if(has_printed == False):
+                client.publish("P2P/Message", "All users are at their keyboards.")
+                client.publish("P2P/LED", "LED_ON") 
+                has_printed = True    
         

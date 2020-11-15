@@ -24,6 +24,8 @@ def on_connect(client, userdata, flags, rc):
     client.message_callback_add("P2P/users", users_callback)   
     client.subscribe("P2P/Message")  
     client.message_callback_add("P2P/Message", message_callback) 
+    client.subscribe("P2P/LED")  
+    client.message_callback_add("P2P/LED", LED_callback) 
 
 def message_callback(client, userdata, message):
     #the third argument is 'message' here unlike 'msg' in on_message 
@@ -33,7 +35,7 @@ def message_callback(client, userdata, message):
 
 #Users topic will store the client_ids of both clients.
 #Will have USR data published to it & the 'middleman' will publish LED_ON if both users are present.
-def users_callback(client, userdata, message):
+def LED_callback(client, userdata, message):
     #the third argument is 'message' here unlike 'msg' in on_message
     if str(message.payload, "utf-8")== "LED_ON":
         grovepi.digitalWrite(ledPrt, 1) #Turn LED on
@@ -43,7 +45,7 @@ def users_callback(client, userdata, message):
 def message_callback(client, userdata, message):
     #the third argument is 'message' here unlike 'msg' in on_message 
     payL = str(message.payload, "utf-8")
-    if(payL[1] != _username[1]):
+    if(payL[1] != _username[1] and ":" in payL):
         print(payL)
       
 #Default message callback. Please use custom callbacks.
