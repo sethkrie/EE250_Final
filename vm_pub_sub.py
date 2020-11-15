@@ -25,7 +25,7 @@ def on_connect(client, userdata, flags, rc):
 def Message_callback(client, userdata, message):
     #the third argument is 'message' here unlike 'msg' in on_message 
     payL = str(message.payload, "utf-8")
-    if(payL[1] != _username[1] and ":" in payL):
+    if(len(buf) > 1):
         print(payL)
     	  
 #Default message callback. Please use custom callbacks.
@@ -50,7 +50,8 @@ def on_press(key):
     elif(k_c != ''):
         buf.append(k_c)
     elif(key == Key.backspace):
-        buf.pop()
+        if(len(buf) > 0):
+            buf.pop()
     elif(key == Key.tab):
         lis.stop()
         client.disconnect()
@@ -73,7 +74,7 @@ if __name__ == '__main__':
     lis.start() # start to listen on a separate thread  
 
     while True:   
-        client.publish("P2P/users", str(_username + ':100'))
+        client.publish("P2P/users", str(_username + ':1300'))
         time.sleep(1)
         on_press(lis)
         

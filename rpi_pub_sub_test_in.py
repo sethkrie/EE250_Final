@@ -39,10 +39,9 @@ def LED_callback(client, userdata, message):
 def message_callback(client, userdata, message):
     #the third argument is 'message' here unlike 'msg' in on_message 
     payL = str(message.payload, "utf-8")
-    if(payL[1] != _username[1] and ":" in payL):
+    if(len(buf) > 1):
         print(payL)
-    elif(":" not in payL):
-        print(payL)
+   
       
 #Default message callback. Please use custom callbacks.
 def on_message(client, userdata, msg):
@@ -69,7 +68,8 @@ def on_press(key):
     elif(k_c != ''):
         buf.append(k_c)
     elif(key == Key.backspace):
-        buf.pop()
+        if(len(buf) > 0):
+            buf.pop()
     
 if __name__ == '__main__':   
     print("Enter your username: ")
