@@ -13,7 +13,6 @@ _username = ""
 
 ledPrt = 2 # D2 Status LED
 ultPrt = 4 # D4 is the port for ultrasonic ranger
-grovepi.pinMode(ledPrt,"OUTPUT")
 
 def on_connect(client, userdata, flags, rc):
     print("Connected to server (i.e., broker) with result code "+str(rc))
@@ -39,7 +38,9 @@ def LED_callback(client, userdata, message):
 def Message_callback(client, userdata, message):
     #the third argument is 'message' here unlike 'msg' in on_message 
     payL = str(message.payload, "utf-8")
-    print(payL)
+    comp = ''
+    if(payL != str(_username + ": " + comp.join(buf))):
+       print(payL)
    
       
 #Default message callback. Please use custom callbacks.
@@ -87,11 +88,13 @@ if __name__ == '__main__':
     time.sleep(0.01)  
     
     lis = Listener(on_press=on_press)
-    lis.start() # Start to listen on a separate thread  
-    led = 1
+    lis.start() # Start to listen on a separate thread
+    
+    
+    grovepi.pinMode(ledPrt,"OUTPUT")
            
     fs = 20  
-    t = 10 
+    t = 5 
     while True:       
         # Moving average of distance values from USR 
         avg_distance    = []

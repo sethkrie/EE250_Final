@@ -25,7 +25,9 @@ def on_connect(client, userdata, flags, rc):
 def Message_callback(client, userdata, message):
     #the third argument is 'message' here unlike 'msg' in on_message 
     payL = str(message.payload, "utf-8")
-    print(payL)
+    comp = ''
+    if(payL != str(_username + ": " + comp.join(buf))):
+       print(payL)
     	  
 #Default message callback. Please use custom callbacks.
 def on_message(client, userdata, msg):
@@ -45,6 +47,7 @@ def on_press(key):
         payload = ''
         payload = _username + ": " + payload.join(buf) 
         client.publish("P2P/Message", payload) #In MQTT, publish this buf to the broker
+        time.sleep(0.2)
         buf.clear()
     elif(k_c != ''):
         buf.append(k_c)
