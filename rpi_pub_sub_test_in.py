@@ -23,7 +23,7 @@ def on_connect(client, userdata, flags, rc):
     client.subscribe("P2P/users")  
     client.message_callback_add("P2P/users", users_callback)   
     client.subscribe("P2P/Message")  
-    client.message_callback_add("P2P/Message", message_callback) 
+    client.message_callback_add("P2P/Message", Message_callback) 
     client.subscribe("P2P/LED")  
     client.message_callback_add("P2P/LED", LED_callback)
 
@@ -36,7 +36,7 @@ def LED_callback(client, userdata, message):
     elif str(message.payload, "utf-8")== "LED_OFF":
         grovepi.digitalWrite(ledPrt, 0) #Turn LED off
 
-def message_callback(client, userdata, message):
+def Message_callback(client, userdata, message):
     #the third argument is 'message' here unlike 'msg' in on_message 
     payL = str(message.payload, "utf-8")
     if(len(buf) > 1):
