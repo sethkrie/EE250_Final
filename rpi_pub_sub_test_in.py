@@ -1,68 +1,52 @@
-"""EE 250L Lab 04 Starter Code
-
-#Robert Sutherland, Seth Krieger
-#GIT: https://github.com/usc-ee250-fall2020/lab05-rob/tree/lab05/ee250/lab05
-#Drive: https://drive.google.com/drive/folders/13Ljqi71uNqkf6xp1ku9zclpA9hRe3q3O?usp=sharing 
-
-Run rpi_pub_and_sub.py on your Raspberry Pi."""
-
 import paho.mqtt.client as mqtt
 import time
 import sys
+import numpy
 from pynput.keyboard import Listener, Key
 
-# By appending the folder of all the GrovePi libraries to the system path here,
-# we are successfully `import grovepi`
 sys.path.append('../../Software/Python/')
 # This append is to support importing the LCD library.
 sys.path.append('../../Software/Python/grove_rgb_lcd')
 
-
 import grovepi
-ultPrt = 4 # D4 is the port for ultrasonic ranger
-ledPrt = 2 # D2 Status LED
-grovepi.pinMode(ledPrt,"OUTPUT")
-
 _username = ""
 
-
+ledPrt = 2 # D2 Status LED
+ultPrt = 4 # D4 is the port for ultrasonic ranger
+grovepi.pinMode(ledPrt,"OUTPUT")
 
 def on_connect(client, userdata, flags, rc):
     print("Connected to server (i.e., broker) with result code "+str(rc))
     #subscribe to topics of interest here
     
     #We could just make USR data available to the Flask server and simply publish to it without the callbacks. Maybe a bit of a cleaner design
-    client.subscribe("P2P/ultrasonicRanger")
-    client.message_callback_add("P2P/ultrasonicRanger", ult_callback)
+    client.subscribe("P2P/users")  
+    client.message_callback_add("P2P/users", users_callback)   
     client.subscribe("P2P/Message")  
-    client.message_callback_add("P2P/Message", Message_callback) 
-    client.subscribe("P2P/LED")
-    client.message_callback_add("P2P/LED", led_callback)
-    
-def ult_callback(client, userdata, message):
-    #the third argument is 'message' here unlike 'msg' in on_message 
-    print(message.topic + " " + "\"" + 
-        str(message.payload, "utf-8") + "\"")
+    client.message_callback_add("P2P/Message", message_callback) 
 
-#Custom callbacks need to be structured with three args like on_message()
-def led_callback(client, userdata, message):
-    #the third argument is 'message' here unlike 'msg' in on_message
-    time.sleep(.5)
-    #print(message.topic + " " + "\"" + 
-        #str(message.payload, "utf-8") + "\"")
-    if str(message.payload, "utf-8")== "LED_ON":
-        grovepi.digitalWrite(ledPrt, 1) #Turn LED on
-    elif str(message.payload, "utf-8")== "LED_OFF":
-        grovepi.digitalWrite(ledPrt, 0) #Turn LED off
-
-def Message_callback(client, userdata, message):
+def message_callback(client, userdata, message):
     #the third argument is 'message' here unlike 'msg' in on_message 
     payL = str(message.payload, "utf-8")
     if(payL[1] != _username[1]):
         print(payL)
-    #setText_norefresh(str(message.payload, "utf-8"))
 
-          
+#Users topic will store the client_ids of both clients.
+#Will have USR data published to it & the 'middleman' will publish LED_ON if both users are present.
+def users_callback(client, userdata, message):
+    #the third argument is 'message' here unlike 'msg' in on_message
+    if str(message.payload, "utf-8")== "LED_ON":      
+        print('Both users are present.')
+        grovepi.digitalWrite(ledPrt, 1) #Turn LED on
+    elif str(message.payload, "utf-8")== "LED_OFF":
+        grovepi.digitalWrite(ledPrt, 0) #Turn LED off
+
+def message_callback(client, userdata, message):
+    #the third argument is 'message' here unlike 'msg' in on_message 
+    payL = str(message.payload, "utf-8")
+    if(payL[1] != _username[1]):
+        print(payL)
+      
 #Default message callback. Please use custom callbacks.
 def on_message(client, userdata, msg):
     print("on_message: " + msg.topic + " " + str(msg.payload, "utf-8"))
@@ -82,54 +66,56 @@ def on_press(key):
         payload = ''
         payload = _username + ": " + payload.join(buf) 
         client.publish("P2P/Message", payload) #In MQTT, publish this buf to the broker
+        time.sleep(0.01)
         buf.clear()
     elif(k_c != ''):
         buf.append(k_c)
-        
-if __name__ == '__main__':
-
+    elif(key == Key.backspace):
+        buf.pop()
     
+if __name__ == '__main__':   
     print("Enter your username: ")
     _username = input()
     
-    #this section is covered in publisher_and_subscriber_example.py
-    client = mqtt.Client()
+    
+    #Instantiate MQTT client.
+    client = mqtt.Client(userdata = _username)
     client.on_message = on_message
     client.on_connect = on_connect
     client.connect(host="eclipse.usc.edu", port=11000, keepalive=60)
-    client.loop_start()
+    client.loop_start()  
      
-    
-    
     payload = _username + " has joined the room."
     client.publish("P2P/Message", payload)
+    time.sleep(0.01)  
+    client.publish("P2P/users", _username + ":300")
     
     lis = Listener(on_press=on_press)
-    lis.start() # start to listen on a separate thread  
-    led = 0   
-    #setRGB(100,100,100) #bright screen
-    while True:
-        #Keyboard Handler
-        on_press(lis)
-        #lis.join() 
-        #Poll USR value & publish (always)
-        time.sleep(1)
-        distance = grovepi.ultrasonicRead(ultPrt)
-        #client.publish("P2P/ultrasonicRanger", distance)
+    lis.start() # Start to listen on a separate thread  
+    led = 1
            
-        if(distance < 200 and led == 0):
-            led = 1
-            client.publish("P2P/LED", 'LED_ON')
-            payload = _username + " is at their keyboard."
-            client.publish("P2P/Message", payload)
-        elif(distance > 200 and led == 1):
-            led = 0
-            client.publish("P2P/LED", 'LED_OFF')
-            payload = _username + " is away from their keyboard."
-            client.publish("P2P/Message", payload)
-        
-        
-          
-        
-        
-
+    fs = 20  
+    t = 10 
+    while True:       
+        # Keyboard Handler
+        on_press(lis)
+        time.sleep(1)
+        # # Moving average of distance values from USR 
+        # avg_distance    = []
+        # for i in range(t):
+        #     # Observe a data in a window of 5 samples (1 second)
+        #     distance_window = []
+        #     for j in range(fs):
+        #         # Poll USR value   
+        #         time.sleep(0.05)
+        #         distance_window.append(grovepi.ultrasonicRead(ultPrt))      
+        #     avg_distance.append(numpy.sum(distance_window) / len(distance_window))
+                     
+        # # We don't want excessive updates in case a user bumps the sensor.
+        # # Look at the averge of the moving window across 10s
+        # # Publish user's average distance over 10 seconds sampled at 20Hz to /users
+        # avg = numpy.sum(avg_distance) / len(distance_window)  
+        # print(avg)    
+        # client.publish("P2P/users", _username + ":" + str(avg))
+        # time.sleep(0.1)
+        # avg_distance.clear()
