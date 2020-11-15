@@ -50,7 +50,10 @@ def on_press(key):
         buf.append(k_c)
     elif(key == Key.backspace):
         buf.pop()
-    	
+    elif(key == Key.tab):
+        lis.stop()
+        client.disconnect()
+        
 if __name__ == '__main__':
     print("Enter your username: ")
     _username = input()
@@ -64,17 +67,13 @@ if __name__ == '__main__':
     
     payload = _username + " has joined the room."
     client.publish("P2P/Message", payload)
-    
-    time.sleep(0.01)
-    client.publish("P2P/users", _username + ':300')
-    time.sleep(0.01)
+
     
     lis = Listener(on_press=on_press)
     lis.start() # start to listen on a separate thread  
 
     while True:
-    	#Keyboard Handler
-        lis.join()
+    	
         
         client.publish("P2P/users", _username + ':100')
         time.sleep(1)

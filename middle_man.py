@@ -21,13 +21,12 @@ def message_callback(client, userdata, message):
 # Users topic will store the client_ids of both clients.
 # Will have USR data published to it & the 'middleman' will publish LED_ON if both users are present.
 def users_callback(client, userdata, message):
-    # Check if the client is already connected
+    # Packet format is 'user_id':USR_data
     payload = str(message.payload, "utf-8")
     user = payload[:payload.index(":")]
-    data = float(payload[payload.index(":") + 1:])
-    print(payload)
-    print(user + ":" + str(data))
+    data = float(payload[payload.index(":") + 1:]) 
     
+    # Check if the client is already connected   
     if(user in connected_clients):
         idx = connected_clients.index(user)
         if(data > 200 or data < 0):
@@ -65,7 +64,8 @@ if __name__ == '__main__':
         print(status)
         print(connected_clients)
         if(len(status) > 1):
-            if(False not in status):
+            if(False not in status):             
+                client.publish("P2P/users", "All users are at their keyboards.")
                 client.publish("P2P/users", "LED_ON")
             else:
                 client.publish("P2P/users", "LED_OFF")       
