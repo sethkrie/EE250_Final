@@ -22,3 +22,6 @@ pi: hi
 sam has joined the room.
 pi is not at their keyboard.
 All users are at their keyboards.
+All users are at their keyboards.
+All users are at their keyboards.
+All users are at their keyboards.

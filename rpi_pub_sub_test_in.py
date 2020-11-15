@@ -35,8 +35,6 @@ def LED_callback(client, userdata, message):
         grovepi.digitalWrite(ledPrt, 1) #Turn LED on
     elif str(message.payload, "utf-8")== "LED_OFF":
         grovepi.digitalWrite(ledPrt, 0) #Turn LED off
-        
-def users_callback(client, userdata, message):
 
 def message_callback(client, userdata, message):
     #the third argument is 'message' here unlike 'msg' in on_message 
@@ -48,7 +46,8 @@ def message_callback(client, userdata, message):
       
 #Default message callback. Please use custom callbacks.
 def on_message(client, userdata, msg):
-    print("on_message: " + msg.topic + " " + str(msg.payload, "utf-8"))
+    if("users" not in msg.topic): 
+        print("on_message: " + msg.topic + " " + str(msg.payload, "utf-8"))
     
 buf = []
 def on_press(key):
