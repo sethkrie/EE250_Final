@@ -87,10 +87,8 @@ if __name__ == '__main__':
     lis.start() # Start to listen on a separate thread
           
     fs = 20  
-    t = 5 
-    while True:
-        # Keyboard Handler
-        on_press(lis)       
+    t = 10 
+    while True:      
         # Moving average of distance values from USR 
         avg_distance    = []
         for i in range(t):
@@ -109,4 +107,6 @@ if __name__ == '__main__':
         client.publish("P2P/users", str(_username + ":" + str(avg)))
         print(avg)
         avg_distance.clear()
+        # Keyboard Handler
+        on_press(lis) 
         
