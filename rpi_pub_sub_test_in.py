@@ -93,9 +93,6 @@ if __name__ == '__main__':
     fs = 20  
     t = 10 
     while True:       
-        # Keyboard Handler
-        on_press(lis)
-        time.sleep(1)
         # Moving average of distance values from USR 
         avg_distance    = []
         for i in range(t):
@@ -113,3 +110,6 @@ if __name__ == '__main__':
         avg = numpy.sum(avg_distance) / len(distance_window)   
         client.publish("P2P/users", str(_username + ":" + str(avg)))
         avg_distance.clear()
+        
+        # Keyboard Handler
+        on_press(lis)
