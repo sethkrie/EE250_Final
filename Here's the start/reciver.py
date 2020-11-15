@@ -23,7 +23,7 @@ def on_connect(client, userdata, flags, rc):
     client.message_callback_add("P2P/Message", Message_callback) 
     #client.subscribe("P2P/LED")
     
-    ########################333333333333#################################################################
+    
 def fileAppend(messagePayload):
     fileCont = []#["  ______New Message_____  \n"]
 
@@ -33,7 +33,7 @@ def fileAppend(messagePayload):
     str1 = ""
     appendThis.write(str1.join(fileCont))
     appendThis.close()
-#######################################################################################################
+
     
 
 
