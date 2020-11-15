@@ -4,16 +4,14 @@ import sys
 
 def on_connect(client, userdata, flags, rc):
     print("Connected to server (i.e., broker) with result code "+ str(rc))
-    #subscribe to topics of interest here
+    # Subscribe to topics of interest here
     
-    # We could just make USR data available to the Flask server and simply publish to it without the callbacks. Maybe a bit of a cleaner design
     client.subscribe("P2P/users")  
     client.message_callback_add("P2P/users", users_callback)   
     client.subscribe("P2P/Message")  
     client.message_callback_add("P2P/Message", message_callback) 
 
 def message_callback(client, userdata, message):
-    #the third argument is 'message' here unlike 'msg' in on_message 
     payL = str(message.payload, "utf-8")
     if(payL[1] != _username[1]):
         print(payL)
