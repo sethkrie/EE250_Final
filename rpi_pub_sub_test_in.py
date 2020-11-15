@@ -44,7 +44,6 @@ def Message_callback(client, userdata, message):
       
 #Default message callback. Please use custom callbacks.
 def on_message(client, userdata, msg):
-    if("users" not in msg.topic): 
         print("on_message: " + msg.topic + " " + str(msg.payload, "utf-8"))
     
 buf = []
@@ -88,7 +87,9 @@ if __name__ == '__main__':
           
     fs = 20  
     t = 10 
-    while True:      
+    while True:       
+        # Keyboard Handler
+        on_press(lis)    
         # Moving average of distance values from USR 
         avg_distance    = []
         for i in range(t):
@@ -107,6 +108,4 @@ if __name__ == '__main__':
         client.publish("P2P/users", str(_username + ":" + str(avg)))
         print(avg)
         avg_distance.clear()
-        # Keyboard Handler
-        on_press(lis) 
         
