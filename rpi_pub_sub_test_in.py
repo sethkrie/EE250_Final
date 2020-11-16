@@ -86,7 +86,7 @@ if __name__ == '__main__':
     lis.start() # Start to listen on a separate thread
           
     fs = 20  
-    t = 10 
+    t = 5
     while True:       
         # Keyboard Handler
         on_press(lis)    
