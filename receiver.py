@@ -67,9 +67,6 @@ def on_press(key):
         buf.pop()
         
 if __name__ == '__main__':
-    print("Enter your username: ")
-    _username = input()
-    
     #this section is covered in publisher_and_subscriber_example.py
     client = mqtt.Client()
     client.on_message = on_message

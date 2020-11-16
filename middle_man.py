@@ -23,6 +23,7 @@ def users_callback(client, userdata, message):
     payload = str(message.payload, "utf-8")
     user = payload[:payload.index(":")]
     data = float(payload[payload.index(":") + 1:]) 
+    print(payload)
     
     # Check if the client is already connected   
     if(user in connected_clients):
