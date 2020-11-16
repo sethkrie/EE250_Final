@@ -38,7 +38,7 @@ def Message_callback(client, userdata, message):
     #the third argument is 'message' here unlike 'msg' in on_message 
     payL = str(message.payload, "utf-8")
     comp = ''
-    if(payL != str(_username + ": " + comp.join(buf))):
+    if(str(_username + ":") not in payL):
        print(payL)
    
       
